@@ -1,45 +1,49 @@
-import router from '@/js/route'
+import router from "@/js/route";
 
-const ls = 'is_auth';
-
-const getIsAuth = () => {
-    const item = localStorage.getItem(ls) ?? false;
-    if(item === 'true' || item === true){
-        return true
-    } else {
-        return false;
-    }
-}
+const ls = "is_auth";
 
 const auth = {
-    state(){
+    state() {
         return {
-            is_auth: getIsAuth(),
-            user: {},
-        }
+            is_auth: (() => {
+                const item = localStorage.getItem(ls) ?? false;
+                if (item === "true" || item === true) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })(),
+            user_: {},
+        };
     },
     mutations: {
-        setAuth(state, newAuth){
+        setAuth(state, newAuth) {
             state.is_auth = newAuth;
         },
-        login(state, user){
+        setUser(state, newUser) {
+			state.user_ = newUser;
+		},
+        login(state, user) {
             state.is_auth = true;
-            state.user = user;
+			state.setUser(user);
             localStorage.setItem(ls, true);
-            router.push({name: 'home'});
+            router.push({ name: "home" });
         },
-        logout(state){
+        logout(state) {
             state.is_auth = false;
-            state.user = {};
+			state.setUser({});
             localStorage.setItem(ls, false);
-            router.push({name: 'login'});
-        }
+            router.push({ name: "login" });
+        },
     },
     getters: {
-        isAuth(state){
+        isAuth(state) {
             return state.is_auth;
+        },
+        user(state){
+            return state.user_;
         }
-    }
+    },
 };
 
 export default auth;
